@@ -1,6 +1,14 @@
-﻿#include "pch.h"
+﻿/*
+ FILE: fish.h/cpp
+ FUNCTION: create class fish, and define fish's action and characteristic in it
+ COPYRIGHT: Edward Hook
+ */
 
+#include "pch.h"
+
+//define fish's kind when a new fish is created
 fish::fish() {
+	//the ratio can be changed
 	int random = rand() % 100;
 	if (random <= 25) kind = 1;
 	else if (random <= 45) kind = 2;
@@ -13,10 +21,13 @@ fish::fish() {
 	emerge();
 }
 
+//judge if a fish is still in the canvas
+//1 for in, 0 for out
 bool fish::in_canvas() {
 	return x >= -nowlength&&x <= CANVAS_LENGTH+nowlength && y >= -nowwidth&&y <= CANVAS_WIDTH+nowwidth;
 }
 
+//init a fish's basic info (load image and so on)
 void fish::init() {
 	switch (kind) {
 	case 1: 
@@ -60,6 +71,7 @@ void fish::init() {
 	state = 1;
 }
 
+//decide the location where a fish would emerge
 void fish::emerge() {
 	int situation = rand() % 4;//appear on different sides of background
 	angle = rand() % 90;
@@ -99,6 +111,7 @@ void fish::emerge() {
 	}
 }
 
+//calculate a fish's movement in every loop
 void fish::move() {
 	int newangle;
 	newangle = rand() % 7 - 3;
@@ -111,10 +124,12 @@ void fish::move() {
 	y -= (int)(v*sin(PI*angle / 180)*t);
 }
 
+//show a fish's real-time image on canvas
 void fish::show() {
 	transparentimage(NULL, x - nowlength / 2, y - nowwidth / 2, &nowimg, BLACK);
 }
 
+//judge if a fish is dead (a bullet possibly can't kill a fish)
 bool fish::is_dead(int cost) {
 	int p = ((double)cost / value)*100;
 	int random = rand() % 100;
@@ -122,6 +137,7 @@ bool fish::is_dead(int cost) {
 	else return false;
 }
 
+//update the fish-collecting system when a fish is dead
 void fish::dead(fish_collect *fc) {
 	fc[kind].num++;
 }
