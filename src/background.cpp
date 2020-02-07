@@ -1,58 +1,67 @@
+/*
+ FILE: background.h/cpp
+ FUNCTION: some functions used for graphics
+ COPYRIGHT: Evergrow Hook
+*/
 #include "pch.h"
 
+//create a button
 void createbutton(int l, int r, int u, int d, int size, LPCTSTR lpszFace) {
 	setfillcolor(WHITE);
 	solidroundrect(l, u, r, d, 0, 0);
 	settextcolor(BLACK);
-	settextstyle(size, 0, _T("ËÎÌå"));
+	settextstyle(size, 0, _T("å®‹ä½“"));
 	RECT rect = { l,u,r,d };
 	drawtext(lpszFace, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 }
 
+//create a headline
 void setheadline(int x,int y,int size, LPCTSTR lpszFace) {
 	settextcolor(YELLOW);
-	settextstyle(size, 0, _T("ºÚÌå"));
+	settextstyle(size, 0, _T("é»‘ä½“"));
 	outtextxy(x, y, lpszFace);
 }
 
-// ÔØÈëPNGÍ¼²¢È¥Í¸Ã÷²¿·Ö
-void drawAlpha(IMAGE* picture, int  picture_x, int picture_y) //xÎªÔØÈëÍ¼Æ¬µÄX×ø±ê£¬yÎªY×ø±ê
+// load a .png picture and remove the transparent part
+//notice: this function is copied from the Internet
+void drawAlpha(IMAGE* picture, int  picture_x, int picture_y) //xä¸ºè½½å…¥å›¾ç‰‡çš„Xåæ ‡ï¼Œyä¸ºYåæ ‡
 {
 
-	// ±äÁ¿³õÊ¼»¯
-	DWORD *dst = GetImageBuffer();    // GetImageBuffer()º¯Êı£¬ÓÃÓÚ»ñÈ¡»æÍ¼Éè±¸µÄÏÔ´æÖ¸Õë£¬EASYX×Ô´ø
+	// å˜é‡åˆå§‹åŒ–
+	DWORD *dst = GetImageBuffer();    // GetImageBuffer()å‡½æ•°ï¼Œç”¨äºè·å–ç»˜å›¾è®¾å¤‡çš„æ˜¾å­˜æŒ‡é’ˆï¼ŒEASYXè‡ªå¸¦
 	DWORD *draw = GetImageBuffer();
-	DWORD *src = GetImageBuffer(picture); //»ñÈ¡pictureµÄÏÔ´æÖ¸Õë
-	int picture_width = picture->getwidth(); //»ñÈ¡pictureµÄ¿í¶È£¬EASYX×Ô´ø
-	int picture_height = picture->getheight(); //»ñÈ¡pictureµÄ¸ß¶È£¬EASYX×Ô´ø
-	int graphWidth = getwidth();       //»ñÈ¡»æÍ¼ÇøµÄ¿í¶È£¬EASYX×Ô´ø
-	int graphHeight = getheight();     //»ñÈ¡»æÍ¼ÇøµÄ¸ß¶È£¬EASYX×Ô´ø
-	int dstX = 0;    //ÔÚÏÔ´æÀïÏñËØµÄ½Ç±ê
+	DWORD *src = GetImageBuffer(picture); //è·å–pictureçš„æ˜¾å­˜æŒ‡é’ˆ
+	int picture_width = picture->getwidth(); //è·å–pictureçš„å®½åº¦ï¼ŒEASYXè‡ªå¸¦
+	int picture_height = picture->getheight(); //è·å–pictureçš„é«˜åº¦ï¼ŒEASYXè‡ªå¸¦
+	int graphWidth = getwidth();       //è·å–ç»˜å›¾åŒºçš„å®½åº¦ï¼ŒEASYXè‡ªå¸¦
+	int graphHeight = getheight();     //è·å–ç»˜å›¾åŒºçš„é«˜åº¦ï¼ŒEASYXè‡ªå¸¦
+	int dstX = 0;    //åœ¨æ˜¾å­˜é‡Œåƒç´ çš„è§’æ ‡
 
-	// ÊµÏÖÍ¸Ã÷ÌùÍ¼ ¹«Ê½£º Cp=¦Áp*FP+(1-¦Áp)*BP £¬ ±´Ò¶Ë¹¶¨ÀíÀ´½øĞĞµãÑÕÉ«µÄ¸ÅÂÊ¼ÆËã
+	// å®ç°é€æ˜è´´å›¾ å…¬å¼ï¼š Cp=Î±p*FP+(1-Î±p)*BP ï¼Œ è´å¶æ–¯å®šç†æ¥è¿›è¡Œç‚¹é¢œè‰²çš„æ¦‚ç‡è®¡ç®—
 	for (int iy = 0; iy < picture_height; iy++)
 	{
 		for (int ix = 0; ix < picture_width; ix++)
 		{
-			int srcX = ix + iy * picture_width; //ÔÚÏÔ´æÀïÏñËØµÄ½Ç±ê
-			int sa = ((src[srcX] & 0xff000000) >> 24); //0xAArrggbb;AAÊÇÍ¸Ã÷¶È
-			int sr = ((src[srcX] & 0xff0000) >> 16); //»ñÈ¡RGBÀïµÄR
+			int srcX = ix + iy * picture_width; //åœ¨æ˜¾å­˜é‡Œåƒç´ çš„è§’æ ‡
+			int sa = ((src[srcX] & 0xff000000) >> 24); //0xAArrggbb;AAæ˜¯é€æ˜åº¦
+			int sr = ((src[srcX] & 0xff0000) >> 16); //è·å–RGBé‡Œçš„R
 			int sg = ((src[srcX] & 0xff00) >> 8);   //G
 			int sb = src[srcX] & 0xff;              //B
 			if (ix >= 0 && ix <= graphWidth && iy >= 0 && iy <= graphHeight && dstX <= graphWidth * graphHeight)
 			{
-				dstX = (ix + picture_x) + (iy + picture_y) * graphWidth; //ÔÚÏÔ´æÀïÏñËØµÄ½Ç±ê
+				dstX = (ix + picture_x) + (iy + picture_y) * graphWidth; //åœ¨æ˜¾å­˜é‡Œåƒç´ çš„è§’æ ‡
 				int dr = ((dst[dstX] & 0xff0000) >> 16);
 				int dg = ((dst[dstX] & 0xff00) >> 8);
 				int db = dst[dstX] & 0xff;
-				draw[dstX] = ((sr * sa / 255 + dr * (255 - sa) / 255) << 16)  //¹«Ê½£º Cp=¦Áp*FP+(1-¦Áp)*BP  £» ¦Áp=sa/255 , FP=sr , BP=dr
-					| ((sg * sa / 255 + dg * (255 - sa) / 255) << 8)         //¦Áp=sa/255 , FP=sg , BP=dg
-					| (sb * sa / 255 + db * (255 - sa) / 255);              //¦Áp=sa/255 , FP=sb , BP=db
+				draw[dstX] = ((sr * sa / 255 + dr * (255 - sa) / 255) << 16)  //å…¬å¼ï¼š Cp=Î±p*FP+(1-Î±p)*BP  ï¼› Î±p=sa/255 , FP=sr , BP=dr
+					| ((sg * sa / 255 + dg * (255 - sa) / 255) << 8)         //Î±p=sa/255 , FP=sg , BP=dg
+					| (sb * sa / 255 + db * (255 - sa) / 255);              //Î±p=sa/255 , FP=sb , BP=db
 			}
 		}
 	}
 }
 
+//load an image in a clear way
 void loadAlpha(IMAGE* img, LPCTSTR pImgFile, int nWidth = 0, int nHeight = 0, bool bResize = false) {
 	IMAGE tp;
 	loadimage(&tp, _T("img\\transparent.png"), 0, 0, true);
@@ -60,16 +69,19 @@ void loadAlpha(IMAGE* img, LPCTSTR pImgFile, int nWidth = 0, int nHeight = 0, bo
 	loadimage(img, pImgFile, nWidth, nHeight, bResize);
 }
 
+//another way of showing a transparent image
+//notice: this function is copied from the Internet
 void transparentimage(IMAGE *dstimg, int x, int y, IMAGE *srcimg, UINT transparentcolor)
 {
 	HDC dstDC = GetImageHDC(dstimg);
 	HDC srcDC = GetImageHDC(srcimg);
 	int w = srcimg->getwidth();
 	int h = srcimg->getheight();
-	// Ê¹ÓÃ Windows GDI º¯ÊıÊµÏÖÍ¸Ã÷Î»Í¼
+	// ä½¿ç”¨ Windows GDI å‡½æ•°å®ç°é€æ˜ä½å›¾
 	TransparentBlt(dstDC, x, y, w, h, srcDC, 0, 0, w, h, transparentcolor);
 }
 
+//show a number
 void puttextxy(int x, int y, int num) {
 	TCHAR ss[20];
 	swprintf_s(ss, _T("%d"), num);
