@@ -1,6 +1,12 @@
+/*
+ FILE: cannon.h/cpp
+ FUNCTION: create class bullet, cannon and web(which are all related to catching a fish)
+ COPYRIGHT: Evergrow Hook
+*/
 #include "pch.h"
 using namespace std;
 
+//define a bullet's basic info
 Bullet::Bullet(Cannon c, double angle)
 	{
 		x = c.x;
@@ -12,21 +18,25 @@ Bullet::Bullet(Cannon c, double angle)
 		rotateimage(&img, &img, angle, BLACK, true, true);
 	}
 
+//judge if a bullet is still in canvas
 bool Bullet::in_canvas() {
 	if (x + vx * t <= 20 || y - vy * t <= 20 || x + vx * t >= CANVAS_LENGTH - 20) return false;
 	return true;
 }
 
+//calculate a bullet's movement in every loop
 void Bullet::move() {
 	x += vx * t;
 	y -= vy * t;
 }
 
+//show the image of a bullet
 void Bullet::show()
 {
 	transparentimage(NULL, x, y, &img, BLACK);
 }
 
+//define the cannon's basic info
 void Cannon::init()
 {
 	loadAlpha(&img, _T("img\\cannon1.png"), 0, 0, true);
@@ -44,6 +54,7 @@ void Cannon::init()
 	cost = 1;
 }
 
+//show the images of the cannon
 void Cannon::show()
 {
 	transparentimage(NULL, x - length / 2, y - width / 2, &nowimg, BLACK);
@@ -51,6 +62,7 @@ void Cannon::show()
 	drawAlpha(&plus, x + b_length*2, y);
 }
 
+//rotate the cannon according to the location of the mouse
 void Cannon::rotate(MOUSEMSG &m)
 {
 	if (m.y >= y) angle = 0;
@@ -60,11 +72,13 @@ void Cannon::rotate(MOUSEMSG &m)
 	width = nowimg.getheight();
 }
 
+//create a new bullet when click
 void Cannon::fire()
 {
 	bullets.emplace_back(Bullet(*this, angle));
 }
 
+//update the bullets' status
 void Cannon::show_bullets()
 {
 	if(!bullets.empty())
@@ -80,10 +94,12 @@ void Cannon::show_bullets()
 	}
 }
 
+//remove all the bullets
 void Cannon::clear() {
 	bullets.clear();
 }
 
+//update the cannon's size if click the '+' or '-' button
 int Cannon::update(MOUSEMSG &m) {
 	int b=0;
 	if (m.x >= x - b_length*3 && m.x <= x - b_length*2 && m.y >= y && m.y <= y + b_width) b = -1;
@@ -130,6 +146,7 @@ int Cannon::update(MOUSEMSG &m) {
 	else return 1;
 }
 
+//create a web when a bullet hits a fish
 void web::create(Bullet b) {
 	switch (b.kind) {
 	case 1:
@@ -154,6 +171,7 @@ void web::create(Bullet b) {
 	is_gold = false;
 }
 
+//show a web
 void web::show() {
 	if(is_bomb==true) transparentimage(NULL, center.x - 30, center.y - 30, &explode, BLACK);
 	transparentimage(NULL, center.x - r, center.y - r, &img, BLACK);
