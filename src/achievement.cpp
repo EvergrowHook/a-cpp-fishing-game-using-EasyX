@@ -1,4 +1,10 @@
+/*
+ FILE: achievement.h/cpp
+ FUNCTION: create a fish-collection system
+ COPYRIGHT: Evergrow Hook
+*/
 #include "pch.h"
+//init the fish-collection system
 void fish_collect::init(int i) {
 	kind = i;
 	switch (kind) {
@@ -31,10 +37,12 @@ void fish_collect::init(int i) {
 	num = 0;
 }
 
+//update the fish-collection system
 void fish_collect::update() {
 	num++;
 }
 
+//show the fish-collection system
 void fish_collect::show() {
 	putimage(x, y, &img);
 	TCHAR ss[20];
