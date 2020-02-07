@@ -1,5 +1,11 @@
+/*
+ FILE: collision.h/cpp
+ FUNCTION: define the functions and classes used for detecting collisions
+ COPYRIGHT: Evergrow Hook
+*/
 #include "pch.h"
 
+//create an obb rectangle orbiting a fish
 void obb::init() {
 	length = f.length;
 	width = f.width;
@@ -8,6 +14,7 @@ void obb::init() {
 	is_collision = false;
 }
 
+//update an obb rectangle
 void obb::update() {
 	center.x = f.x;
 	center.y = f.y;
@@ -22,17 +29,20 @@ void obb::update() {
 	angle = f.angle;
 }
 
+//show an obb rectangle
 void obb::show() {
 	polygon(point, 4);
 	settextcolor(GREEN);
-	settextstyle(15, 0, _T("黑体"));
+	settextstyle(15, 0, _T("榛戜綋"));
 	puttextxy(center.x, center.y, (int)is_collision);
 }
 
+//calculate the distance between two points
 double distance(POINT a, POINT b) {
 	return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
 }
 
+//calculate the distance between a line and a point
 double line_dst(POINT a, POINT p, POINT q) {
 	//the distance of point a to line bc
 	if (q.x == p.x) {
@@ -47,6 +57,7 @@ double line_dst(POINT a, POINT p, POINT q) {
 	}
 }
 
+//calculate the dot multiply of two segments
 int dotmul(POINT origin, POINT p, POINT q) {
 	int x1, x2, y1, y2;
 	x1 = p.x - origin.x;
@@ -56,8 +67,9 @@ int dotmul(POINT origin, POINT p, POINT q) {
 	return x1 * x2 + y1 * y2;
 }
 
+//judge if a web has caught a fish
 bool collision(obb a, web b) {
-	//球心投影到矩形的两根轴上的点与矩形中心的距离<length/2||width/2+r
+	//鐞冨績鎶曞奖鍒扮煩褰㈢殑涓ゆ牴杞翠笂鐨勭偣涓庣煩褰腑蹇冪殑璺濈<length/2||width/2+r
 	if (distance(a.center, b.center) > a.radius + b.r) return false;
 	POINT axis_l, axis_w;
 	axis_l.x = a.center.x + cos(PI*a.angle / 180)*a.length / 2;
@@ -69,6 +81,7 @@ bool collision(obb a, web b) {
 	return true;
 }
 
+//judge if a bullet has hit a fish
 bool in_obb(obb a, Bullet b) {
 	double d1, d2, d3, d4;
 	POINT bullet;
