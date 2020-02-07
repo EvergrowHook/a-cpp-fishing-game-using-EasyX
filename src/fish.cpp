@@ -1,7 +1,7 @@
 ﻿/*
  FILE: fish.h/cpp
  FUNCTION: create class fish, and define fish's action and characteristic in it
- COPYRIGHT: Edward Hook
+ COPYRIGHT: Evergrow Hook
  */
 
 #include "pch.h"
