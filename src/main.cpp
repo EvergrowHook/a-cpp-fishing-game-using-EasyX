@@ -1,16 +1,25 @@
+/*
+ FILE: main.cpp
+ FUNCTION: the main loop
+ COPYRIGHT: Evergrow Hook
+*/
 #include "pch.h"
 
+//some environment configrations
 void sysinit() {
 	srand((unsigned)time(NULL));
 	initgraph(CANVAS_LENGTH, CANVAS_WIDTH, NOMINIMIZE);
 	setbkmode(TRANSPARENT);
 	HWND hWnd = GetHWnd();
-	SetWindowText(hWnd, _T("≤∂”„¥Ô»À"));
+	SetWindowText(hWnd, _T("ÊçïÈ±ºËææ‰∫∫"));
 	cleardevice();
 }
 
+//main
 int main() {
+	//---------------init----------------
 	sysinit();
+	//--------variable definitions-------
 	IMAGE bk, bk2;
 	MOUSEMSG m;
 	deque<obb> o;
@@ -22,36 +31,44 @@ int main() {
 	int game_state = 0, time = 0, numtmp;
 	bool is_grass, is_bomb;
 	RECT r;
+	//-------------main loop-------------
 	while (1) {
 		switch (game_state) {
-		case 0://ø™ ºΩÁ√Ê
+		case 0://ÂºÄÂßãÁïåÈù¢ the starting interface
+			//some initialization
 			s.init();
 			for (int i = 1; i <= KIND; i++) fc[i].init(i);
 			c.clear();
 			o.clear();
 			PlaySound(_T("wave\\bgm1.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+			//loop
 			while (game_state == 0) {
+				//draw the interface
 				BeginBatchDraw();
 				loadimage(&bk, _T("img\\background2.jpg"), CANVAS_LENGTH, CANVAS_WIDTH);
 				putimage(0, 0, &bk);
-				setheadline(CANVAS_LENGTH / 2 - 80, CANVAS_WIDTH / 2 - 60, 40, _T("≤∂”„¥Ô»À"));
-				createbutton(CANVAS_LENGTH / 2 - 25, CANVAS_LENGTH / 2 + 25, CANVAS_WIDTH / 2 + 40, CANVAS_WIDTH / 2 + 60, 10, _T("ø™ º”Œœ∑"));
-				createbutton(CANVAS_LENGTH / 2 - 25, CANVAS_LENGTH / 2 + 25, CANVAS_WIDTH / 2 + 70, CANVAS_WIDTH / 2 + 90, 10, _T("ÕÀ≥ˆ”Œœ∑"));
-				createbutton(CANVAS_LENGTH / 2 - 25, CANVAS_LENGTH / 2 + 25, CANVAS_WIDTH / 2 + 100, CANVAS_WIDTH / 2 + 120, 10, _T("”Œœ∑∞Ô÷˙"));
+				setheadline(CANVAS_LENGTH / 2 - 80, CANVAS_WIDTH / 2 - 60, 40, _T("ÊçïÈ±ºËææ‰∫∫"));
+				createbutton(CANVAS_LENGTH / 2 - 25, CANVAS_LENGTH / 2 + 25, CANVAS_WIDTH / 2 + 40, CANVAS_WIDTH / 2 + 60, 10, _T("ÂºÄÂßãÊ∏∏Êàè"));
+				createbutton(CANVAS_LENGTH / 2 - 25, CANVAS_LENGTH / 2 + 25, CANVAS_WIDTH / 2 + 70, CANVAS_WIDTH / 2 + 90, 10, _T("ÈÄÄÂá∫Ê∏∏Êàè"));
+				createbutton(CANVAS_LENGTH / 2 - 25, CANVAS_LENGTH / 2 + 25, CANVAS_WIDTH / 2 + 100, CANVAS_WIDTH / 2 + 120, 10, _T("Ê∏∏ÊàèÂ∏ÆÂä©"));
 				EndBatchDraw();
+				//judge if game state should be changed
 				if (MouseHit()) {
 					m = GetMouseMsg();
+					//if click "begin game"
 					if (m.uMsg == WM_LBUTTONDOWN && m.x >= CANVAS_LENGTH / 2 - 25 && m.x <= CANVAS_LENGTH / 2 + 25 && m.y >= CANVAS_WIDTH / 2 + 40 && m.y <= CANVAS_WIDTH / 2 + 60) {
 						PlaySound(NULL, NULL, SND_FILENAME);
 						PlaySound(_T("wave\\menu.wav"), NULL, SND_FILENAME | SND_SYNC);
 						c.init();
 						game_state = 1;
 					}
+					//if click "help"
 					if (m.uMsg == WM_LBUTTONDOWN && m.x >= CANVAS_LENGTH / 2 - 25 && m.x <= CANVAS_LENGTH / 2 + 25 && m.y >= CANVAS_WIDTH / 2 + 100 && m.y <= CANVAS_WIDTH / 2 + 120) {
 						PlaySound(NULL, NULL, SND_FILENAME);
 						PlaySound(_T("wave\\menu.wav"), NULL, SND_FILENAME | SND_SYNC);
 						game_state = 4;
 					}
+					//if click "exit"
 					if (m.uMsg == WM_LBUTTONDOWN && m.x >= CANVAS_LENGTH / 2 - 25 && m.x <= CANVAS_LENGTH / 2 + 25 && m.y >= CANVAS_WIDTH / 2 + 70 && m.y <= CANVAS_WIDTH / 2 + 90) {
 						PlaySound(NULL, NULL, SND_FILENAME);
 						PlaySound(_T("wave\\menu.wav"), NULL, SND_FILENAME | SND_SYNC);
@@ -60,19 +77,27 @@ int main() {
 				}
 			}
 			break;
-		case 1:
+		case 1://Ê∏∏ÊàèÁïåÈù¢ the playing interface
+			//some initializations
 			loadimage(&bk2, _T("img\\background.jpg"), CANVAS_LENGTH, CANVAS_WIDTH);
 			PlaySound(_T("wave\\bgm.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 			s.numtmp = 0;
+			//loop
 			while (1) {
+				//begin to draw the interface
 				BeginBatchDraw();
 				start = GetTickCount();
+				//show the background
 				putimage(0, 0, &bk2);
+				//get mouse's information
 				if (MouseHit()) {
 					m = GetMouseMsg();
 					if (m.uMsg == WM_LBUTTONDOWN) {
+						//if click "back"
 						if (m.x >= 18 && m.x <= 62 && m.y >= 18 && m.y <= 32) game_state = 0;
+						//if click "suspend"
 						if (m.x >= 18 && m.x <= 62 && m.y >= 38 && m.y <= 52) game_state = 2;
+						//if click "achievement system
 						if (m.x >= 20 && m.x <= 60 && m.y >= 460 && m.y <= 470) game_state = 3;
 						if (game_state != 1) {
 							PlaySound(NULL, NULL, SND_FILENAME);
@@ -80,6 +105,7 @@ int main() {
 							EndBatchDraw();
 							break;
 						}
+						//else fire the cannon
 						if (!c.update(m)) {
 							c.fire();
 							s.numtmp = -c.cost;
@@ -88,8 +114,10 @@ int main() {
 						}
 						//PlaySound(_T("wave\\fire.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_NOSTOP);
 					}
+					//update the cannon according to the mouse
 					c.rotate(m);
 				}
+				//create a new fish after 12 loops
 				if (time == 12) {
 					fish ftmp;
 					obb otmp;
@@ -98,6 +126,7 @@ int main() {
 					o.emplace_back(otmp);
 					time = 0;
 				}
+				//judge if bullets hit fish and create webs and update bullets
 				if (!c.bullets.empty())
 					for (auto i = c.bullets.begin(); i != c.bullets.end();) {
 						auto j = o.begin();
@@ -119,6 +148,7 @@ int main() {
 							}
 						}
 					}
+				//update fish
 				if (!o.empty())
 					for (auto i = o.begin(); i != o.end();) {
 						if (!(*i).f.in_canvas()) {
@@ -130,6 +160,7 @@ int main() {
 							i++;
 						}
 					}
+				//judge which fish are caught by webs and judge whether bombs and grasses are caught
 				if (!w.empty())
 					for (auto i = w.begin(); i != w.end(); i++) {
 						if (!(*i).is_show) {
@@ -151,6 +182,7 @@ int main() {
 								}
 								else j++;
 							}
+							//if a bomb is caught, every fish in the web is dead and values are got
 							if (is_bomb==true) {
 								(*i).is_bomb = true;
 								for (auto j = o.begin(); j != o.end();) {
@@ -162,6 +194,7 @@ int main() {
 									else j++;
 								}
 							}
+							//if a grass is caught, every fish in the web is dead but score is -20
 							else if (is_grass==true) {
 								for (auto j = o.begin(); j != o.end();) {
 									if ((*j).is_collision==true) j = o.erase(j);
@@ -169,6 +202,7 @@ int main() {
 								}
 								numtmp = -20;
 							}
+							//in common cases, fish caught by webs are probably not dead
 							else {
 								for (auto j = o.begin(); j != o.end();) {
 									if ((*j).is_collision==true){
@@ -185,6 +219,7 @@ int main() {
 									else j++;
 								}
 							}
+							//update webs' and score's status 
 							(*i).is_show = true;
 							(*i).time = 0;
 							(*i).g_vx = (590 - (*i).center.x) / 15;
@@ -194,11 +229,12 @@ int main() {
 							if (s.numtmp > 0) (*i).is_gold = true;
 						}
 					}
+				//show the fish
 				if (!o.empty())
 					for (auto i = o.begin(); i != o.end(); i++) {
 						(*i).f.show();
-						//(*i).show();
 					}
+				//show the webs
 				if (!w.empty())
 					for (auto i = w.begin(); i != w.end();) {
 						if ((*i).is_show) {
@@ -213,13 +249,17 @@ int main() {
 						}
 						else i++;
 					}
+				//show the bullets
 				c.show_bullets();
-				createbutton(18, 62, 18, 32, 10, _T("ªÿ÷˜≤Àµ•"));
-				createbutton(18, 62, 38, 52, 10, _T("‘›Õ£”Œœ∑"));
+				//show the buttons
+				createbutton(18, 62, 18, 32, 10, _T("Âõû‰∏ªËèúÂçï"));
+				createbutton(18, 62, 38, 52, 10, _T("ÊöÇÂÅúÊ∏∏Êàè"));
 				createbutton(0, 640, 430, 480, 20, _T(""));
-				createbutton(20, 60, 460, 470, 10, _T("≥…æÕœµÕ≥"));
+				createbutton(20, 60, 460, 470, 10, _T("ÊàêÂ∞±Á≥ªÁªü"));
+				//show the cannon and score
 				c.show();
 				s.show();
+				//if score<0, game over
 				if (s.num < 0) {
 					game_state = 5;
 					break;
@@ -227,74 +267,86 @@ int main() {
 				stop = GetTickCount();
 				EndBatchDraw();
 				time++;
+				//control loop's frequency
 				if (stop - start < 30) Sleep(30 - (stop - start));
 			}
 			break;
-		case 2://”Œœ∑‘›Õ£
+		case 2://Ê∏∏ÊàèÊöÇÂÅú game suspending
 			PlaySound(NULL, NULL, SND_FILENAME);
+			//create the interface
 			BeginBatchDraw();
-			createbutton(18, 62, 18, 32, 10, _T("ªÿ÷˜≤Àµ•"));
-			createbutton(18, 62, 38, 52, 10, _T("ºÃ–¯”Œœ∑"));
+			createbutton(18, 62, 18, 32, 10, _T("Âõû‰∏ªËèúÂçï"));
+			createbutton(18, 62, 38, 52, 10, _T("ÁªßÁª≠Ê∏∏Êàè"));
 			EndBatchDraw();
 			m = GetMouseMsg();
+			//if click "continue"
 			if (m.uMsg == WM_LBUTTONDOWN && m.x >= 18 && m.x <= 62 && m.y >= 38 && m.y <= 52) {
 				PlaySound(_T("wave\\menu.wav"), NULL, SND_FILENAME | SND_SYNC);
 				game_state = 1;
 			}
+			//if click "back"
 			if (m.uMsg == WM_LBUTTONDOWN && m.x >= 18 && m.x <= 62 && m.y >= 18 && m.y <= 32) {
 				PlaySound(_T("wave\\menu.wav"), NULL, SND_FILENAME | SND_SYNC);
 				game_state = 0;
 			}
 			break;
-		case 3://≥…æÕœµÕ≥
+		case 3://ÊàêÂ∞±Á≥ªÁªü achievement system
+			//create the interface
 			BeginBatchDraw();
 			createbutton(40, 600, 50, 430, 20, _T(""));
-			createbutton(100, 540, 50, 80, 20, _T("≥…æÕœµÕ≥"));
-			createbutton(520, 540, 50, 60, 10, _T("∑µªÿ"));
-			createbutton(40, 600, 305, 320, 15, _T(" Æ»´ Æ√¿°™°™≥˝“ª÷÷”„∆‰”‡”„∏˜≤∂ªÒ ÆÃı ±∏√”„√¸÷–¬ Ã·…˝“ª±∂£¨ ±º‰≥÷–¯ŒÂ¥Œ…‰ª˜"));
-			createbutton(50, 590, 330, 345, 15, _T("ÀÆƒÊœ˚ ß°™°™≤∂ªÒÀÆ≤› Æ¥Œ ±œ˚≥˝ÀÆ≤›£¨ ±º‰≥÷–¯ŒÂ¥Œ…‰ª˜"));
-			createbutton(50, 590, 355, 370, 15, _T("≈∑ª ∏ΩÃÂ°™°™≤∂ªÒ’®µØŒÂ¥Œ ±∏˜÷÷”„√¸÷–¬ Ã·…˝“ª±∂£¨ ±º‰≥÷–¯ŒÂ¥Œ…‰ª˜"));
+			createbutton(100, 540, 50, 80, 20, _T("ÊàêÂ∞±Á≥ªÁªü"));
+			createbutton(520, 540, 50, 60, 10, _T("ËøîÂõû"));
+			createbutton(40, 600, 305, 320, 15, _T("ÂçÅÂÖ®ÂçÅÁæé‚Äî‚ÄîÈô§‰∏ÄÁßçÈ±ºÂÖ∂‰ΩôÈ±ºÂêÑÊçïËé∑ÂçÅÊù°Êó∂ËØ•È±ºÂëΩ‰∏≠ÁéáÊèêÂçá‰∏ÄÂÄçÔºåÊó∂Èó¥ÊåÅÁª≠‰∫îÊ¨°Â∞ÑÂáª"));
+			createbutton(50, 590, 330, 345, 15, _T("Ê∞¥ÈÄÜÊ∂àÂ§±‚Äî‚ÄîÊçïËé∑Ê∞¥ËçâÂçÅÊ¨°Êó∂Ê∂àÈô§Ê∞¥ËçâÔºåÊó∂Èó¥ÊåÅÁª≠‰∫îÊ¨°Â∞ÑÂáª"));
+			createbutton(50, 590, 355, 370, 15, _T("Ê¨ßÁöáÈôÑ‰Ωì‚Äî‚ÄîÊçïËé∑ÁÇ∏Âºπ‰∫îÊ¨°Êó∂ÂêÑÁßçÈ±ºÂëΩ‰∏≠ÁéáÊèêÂçá‰∏ÄÂÄçÔºåÊó∂Èó¥ÊåÅÁª≠‰∫îÊ¨°Â∞ÑÂáª"));
 			for (int i = 1; i <=KIND; i++) fc[i].show();
 			EndBatchDraw();
 			m = GetMouseMsg();
+			//if click "back"
 			if (m.uMsg == WM_LBUTTONDOWN && m.x >= 520 && m.x <= 540 && m.y >= 50 && m.y <= 60) {
 				PlaySound(NULL, NULL, SND_FILENAME);
 				PlaySound(_T("wave\\menu.wav"), NULL, SND_FILENAME | SND_SYNC);
 				game_state = 1;
 			}
 			break;
-		case 4://”Œœ∑∞Ô÷˙
+		case 4://Ê∏∏ÊàèÂ∏ÆÂä© help
+			//create the interface
 			BeginBatchDraw();
 			putimage(0, 0, &bk);
 			createbutton(100, 540, 50, 430, 20, _T(""));
-			createbutton(100, 540, 50, 80, 20, _T("”Œœ∑∞Ô÷˙"));
-			createbutton(520, 540, 50, 60, 10, _T("∑µªÿ"));
+			createbutton(100, 540, 50, 80, 20, _T("Ê∏∏ÊàèÂ∏ÆÂä©"));
+			createbutton(520, 540, 50, 60, 10, _T("ËøîÂõû"));
 			r = { 110, 90, 530, 540 };
-			settextstyle(15, 0, _T("∫⁄ÃÂ"));
-			drawtext(_T("œÒÕÊ¥´Õ≥µƒ≤∂”„¥Ô»À“ª—˘»•ÕÊ’‚∏ˆ”Œœ∑\nENJOY YOURSELF:)\n\nTIPS:\nÕ¯µΩÀÆ≤›  -20\nÕ¯µΩ’®µØ  Õ¯ƒ⁄”„¿‡»´≤ø ’ªÒ"), &r, DT_LEFT | DT_WORDBREAK);
+			settextstyle(15, 0, _T("Èªë‰Ωì"));
+			drawtext(_T("ÂÉèÁé©‰º†ÁªüÁöÑÊçïÈ±ºËææ‰∫∫‰∏ÄÊ†∑ÂéªÁé©Ëøô‰∏™Ê∏∏Êàè\nENJOY YOURSELF:)\n\nTIPS:\nÁΩëÂà∞Ê∞¥Ëçâ  -20\nÁΩëÂà∞ÁÇ∏Âºπ  ÁΩëÂÜÖÈ±ºÁ±ªÂÖ®ÈÉ®Êî∂Ëé∑"), &r, DT_LEFT | DT_WORDBREAK);
 			EndBatchDraw();
+			//if click "back"
 			m = GetMouseMsg();
 			if (m.uMsg == WM_LBUTTONDOWN && m.x >= 520 && m.x <= 540 && m.y >= 50 && m.y <= 60) game_state = 0;
 			break;
-		case 5://”Œœ∑Ω· ¯
+		case 5://Ê∏∏ÊàèÁªìÊùü game over
+			//create the interface
 			PlaySound(_T("wave\\end.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 			r = { 0,190,640,250 };
 			cleardevice();
 			setbkcolor(BLACK);
-			settextstyle(50, 0, _T("∫⁄ÃÂ"));
+			settextstyle(50, 0, _T("Èªë‰Ωì"));
 			settextcolor(YELLOW);
+			//loop
 			while (game_state == 5) {
 				BeginBatchDraw();
 				drawtext(_T("GAME OVER"), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-				createbutton(295, 345, 300, 310, 10, _T("÷ÿ–¬ø™ º"));
-				createbutton(295, 345, 320, 330, 10, _T("ÕÀ≥ˆ”Œœ∑"));
+				createbutton(295, 345, 300, 310, 10, _T("ÈáçÊñ∞ÂºÄÂßã"));
+				createbutton(295, 345, 320, 330, 10, _T("ÈÄÄÂá∫Ê∏∏Êàè"));
 				EndBatchDraw();
 				m = GetMouseMsg();
+				//if click "restart"
 				if (m.uMsg == WM_LBUTTONDOWN && m.x >= 295 && m.x <= 345 && m.y >= 300 && m.y <= 310) {
 					PlaySound(NULL, NULL, SND_FILENAME);
 					PlaySound(_T("wave\\menu.wav"), NULL, SND_FILENAME | SND_SYNC);
 					game_state = 0;
 				}
+				//if click "exit"
 				else if (m.uMsg == WM_LBUTTONDOWN && m.x >= 295 && m.x <= 345 && m.y >= 320 && m.y <= 330) {
 					PlaySound(NULL, NULL, SND_FILENAME);
 					PlaySound(_T("wave\\menu.wav"), NULL, SND_FILENAME | SND_SYNC);
